@@ -1,25 +1,25 @@
 {% extends 'videochatapp/base.html'%}
 {% load static %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="{% static 'videochatapp/css/login.css' %}"/>   
+    <link rel="stylesheet" type="text/css" href="{% static 'videochatapp/css/login.css' %}"/>   
 {% endblock %}
 {% block content %}
-<div class="container">
-    <div class="login-page">
-        <div class="form">
-        {% for message in messages %}
-            <p class="text-center">{{ message }}</p>
-        {% endfor %}
-        <form class="login-form" action="" method="post" name="register">
-            {% csrf_token %} 
-            <input type="text" placeholder="username" name="username" required/>
-            <input type="email" placeholder="email" name="email" required/>
-            <input type="text" placeholder="FirstName" name="firstname" required/>
-            <input type="text" placeholder="LastName" name="lastname" required/>
-            <input type="password" placeholder="password" name="password" required/>
-            <button>Register</button>
-        </form>
+    <div class="container">
+        <div class="login-page">
+            <div class="form">
+                {% for message in messages %}
+                    <p class="text-center">{{ message }}</p>
+                {% endfor %}
+                <form class="login-form" action="" method="post" name="register">
+                    {% csrf_token %} 
+                    <input type="text" placeholder="username" name="username" required/>
+                    <input type="email" placeholder="email" name="email" required/>
+                    <input type="text" placeholder="FirstName" name="firstname" required/>
+                    <input type="text" placeholder="LastName" name="lastname" required/>
+                    <input type="password" placeholder="password" name="password" required/>
+                    <button>Register</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
