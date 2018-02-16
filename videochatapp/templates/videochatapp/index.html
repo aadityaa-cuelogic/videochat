@@ -1,0 +1,54 @@
+{% load static %}
+<head>
+    <title>WebSockets | WebRTC Many-to-Many Video Conferencing</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'videochatapp/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'videochatapp/plugins/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css' %}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.webrtc-experiment.com/style.css">
+    <link rel="stylesheet" href="{% static 'videochatapp/css/main.css' %}">
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+    <script src="{% static 'videochatapp/js/RTCMultiConnection.js' %}"></script>
+    <script src="{% static 'videochatapp/js/getMediaElement.js' %}"></script>
+    <script src="{% static 'videochatapp/js/getScreenId.js' %}"></script>
+    <script src="{% static 'videochatapp/js/RecordRTC.js' %}"></script>
+    <script src="{% static 'videochatapp/js/gumadapter.js' %}"></script>
+
+</head>
+
+<body>
+    <!-- <video controls autoplay id="recording"></video>
+ -->    <div class="container">
+        <div class="row">
+            <h3 class="lead text-center">Video Conferencing</h3>
+            <div class="col-md-offset-3 col-md-4">
+        	    <div class="from-group">
+                    <input class="form-control" type="text" id="roomid" placeholder="Unique room id">
+                </div>
+
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-success" id="btn-open-or-join">open or join room</button>
+            </div>
+            <div id="recording-container" class="col-md-3">
+                
+            </div>
+        </div>
+        
+        <div class="row">
+            <div id="local-video-container"></div>
+            <!-- <div id="screen-local"></div> -->
+            <div id="screen-remote"></div>
+        </div>   
+        <hr>
+        <div class="row">
+            <div id="remote-video-container"></div> 
+        </div>
+    </div>
+    <div class="inner"></div>
+	<script type="text/javascript" src="{% static 'videochatapp/js/main.js' %}"></script>
+</body>

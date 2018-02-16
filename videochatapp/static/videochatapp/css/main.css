@@ -1,0 +1,70 @@
+video::-webkit-media-controls-overlay-enclosure {
+    display:none !important;
+}
+video::-webkit-media-controls-enclosure {
+    display:none !important;
+}
+video::-webkit-media-controls {
+    display:none !important;
+}
+#local-video-container{
+    margin-top: 50px;
+    position: relative;
+    display: inline-block;
+    width: 409px;
+    margin-left:309px;
+}
+.btnPanel {
+    position: absolute;
+    top: auto;
+    width: 409px;
+    background-color: gray;
+    opacity: 0.7;
+    margin-left: 0;
+    bottom: 0;
+}
+#local-video-container video {
+    margin-left: auto;
+    margin-right: 450px;
+    display: block;
+    width:100%;
+    border-radius:15px;
+}
+#remote-video-container video {
+    margin-left: auto;
+    margin-right: 450px;
+    display: block;
+    width:100%;
+    border-radius:15px;
+}
+#remote-video-container{
+    margin-left:100px;
+    margin-bottom:200px;
+}
+.img-icon{
+    width:25px;
+
+}
+button{
+    margin-right:14px;
+}
+.btn-first{
+    margin-left:80px;
+}
+.full-width{
+    margin-top: 50px;
+    position: relative;
+    display: inline-block;
+    width: 409px;
+    margin-right:50px;
+}
+#screen-remote{
+    margin-top:30px;
+}
+.btn-success[disabled]{
+    color:black;
+}
+button:active{
+    color:pink;
+    background:black;
+}
