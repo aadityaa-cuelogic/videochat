@@ -17,6 +17,9 @@
                 <p>Please login to see this page.</p>
             {% endif %}
         {% endif %}
+        {% for message in messages %}
+            <p class="text-center">{{ message }}</p>
+        {% endfor %}
         <div class="login-page">
             <div class="form">
                 <form class="login-form" method="post" action="{% url 'login' %}">
