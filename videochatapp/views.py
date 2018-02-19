@@ -7,3 +7,9 @@ def home(request):
 @login_required(login_url='/login/')
 def videochat(request,roomkey):
 	return render(request, 'videochatapp/videochat.html',{'roomkey':roomkey})
+
+@login_required(login_url='/login/')
+def create_conference(request):
+
+	return render(request, 'videochatapp/create_conference.html')	
+	

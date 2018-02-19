@@ -20,8 +20,8 @@ class ConferenceRoom(models.Model):
     STATUS_CHOICES = (
         ('SCH','Scheduled'),
         ('COM','Completed'),
-        ('RUN','Running')
-        ('CAN','Cancelled')
+        ('RUN','Running'),
+        ('CAN','Cancelled'),
         ('RES','Rescheduled'),
     )
     status = models.CharField(max_length=3,
@@ -30,28 +30,6 @@ class ConferenceRoom(models.Model):
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
-class ConferenceRoomParticipants(models.Model):
-    """
-    A class to maintain room conference participants list
-    """
-    id = models.AutoField(primary_key=True)
-    conferenceroom = models.ForeignKey(ConferenceRoom)
-    user = models.ForeignKey(User)
-    role = models.ForeignKey(ConferenceRoomRoles)
-    STATUS_CHOICES = (
-        ('BLK','Blocked'),
-        ('ALW','Allowed'),
-    )
-    status = models.CharField(max_length=3,
-                            choices=STATUS_CHOICES,
-                            default='ALW')
-    last_seen_heartbeat = models.DateTimeField(null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 
 class ConferenceRoomRoles(models.Model):
     """
@@ -74,5 +52,24 @@ class ConferenceRoomRoles(models.Model):
     allow_mute_management = models.BooleanField(default=False)
     allow_remove_user = models.BooleanField(default=False)
     allow_block_user = models.BooleanField(default=False)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class ConferenceRoomParticipants(models.Model):
+    """
+    A class to maintain room conference participants list
+    """
+    id = models.AutoField(primary_key=True)
+    conferenceroom = models.ForeignKey(ConferenceRoom)
+    user = models.ForeignKey(User)
+    role = models.ForeignKey(ConferenceRoomRoles)
+    STATUS_CHOICES = (
+        ('BLK','Blocked'),
+        ('ALW','Allowed'),
+    )
+    status = models.CharField(max_length=3,
+                            choices=STATUS_CHOICES,
+                            default='ALW')
+    last_seen_heartbeat = models.DateTimeField(null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
