@@ -7,16 +7,19 @@
 {% block content %}
     <div class="fluid-container">
         {% if form.errors %}
-            <p style="color:red">Your username and password didn't match. Please try again.</p>
+            <p style="color:red" class="text-center">Your username and password didn't match. Please try again.</p>
         {% endif %}
 
         {% if next %}
             {% if user.is_authenticated %}
-                <p>Your account doesn't have access to this page. To proceed,please login with an account that has access.</p>
+                <p class="text-center">Your account doesn't have access to this page. To proceed,please login with an account that has access.</p>
             {% else %}
-                <p>Please login to see this page.</p>
+                <p class="text-center">Please login to see this page.</p>
             {% endif %}
         {% endif %}
+        {% for message in messages %}
+            <p class="text-center">{{ message }}</p>
+        {% endfor %}
         <div class="login-page">
             <div class="form">
                 <form class="login-form" method="post" action="{% url 'login' %}">
