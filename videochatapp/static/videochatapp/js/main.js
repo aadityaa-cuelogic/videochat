@@ -25,7 +25,7 @@ var room_id = document.getElementById('roomid');
 // if (localStorage.getItem('room_id')) {
 //     room_id.value = localStorage.getItem('room_id');
 // } else {
-    room_id.value = connection.token();
+    // room_id.value = connection.token();
     // localStorage.setItem('room_id', room_id.value);
 // }
 
@@ -33,13 +33,13 @@ var room_id = document.getElementById('roomid');
 // ......................Global Variables................
 // ......................................................
 // TDOD : Try to remove these HTML variables
-var common_button =`<button class="btn-mute btn-success"><img class="img-icon" src="static/videochatapp/images/mute.png"></button>
-                <button class="btn-plus btn-success"><img class="img-icon" src="static/videochatapp/images/plus.png"></button>
-                <button class="btn-minus btn-success"><img class="img-icon" src="static/videochatapp/images/minus.png"></button>
-                <button class="btn-full btn-success"><img class="img-icon" src="static/videochatapp/images/fullscreen.png"></button>
+var common_button =`<button class="btn-mute btn-success"><img class="img-icon" src="/static/videochatapp/images/mute.png"></button>
+                <button class="btn-plus btn-success"><img class="img-icon" src="/static/videochatapp/images/plus.png"></button>
+                <button class="btn-minus btn-success"><img class="img-icon" src="/static/videochatapp/images/minus.png"></button>
+                <button class="btn-full btn-success"><img class="img-icon" src="/static/videochatapp/images/fullscreen.png"></button>
             `
-var owner_button =`<button class="btn-share btn-success"><img class="img-icon" src="static/videochatapp/images/share.png"></button>
-                    <button class="btn-exit btn-success"><img class="img-icon" src="static/videochatapp/images/exit.png"></button>`
+var owner_button =`<button class="btn-share btn-success"><img class="img-icon" src="/static/videochatapp/images/share.png"></button>
+                    <button class="btn-exit btn-success"><img class="img-icon" src="/static/videochatapp/images/exit.png"></button>`
 
 var recording_button = `<a class="btn btn-success btn-recording">Start Recording</a>
                         <a class="btn btn-success btn-stop-recodring">Stop Recording</a>`
