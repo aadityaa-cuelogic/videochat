@@ -13,6 +13,9 @@ def home(request):
 	return render(request, 'videochatapp/home.html')
 
 
+def videochat(request):
+	return render(request, 'videochatapp/index.html')
+
 def register(request):
 
     if request.method == 'POST':
@@ -38,4 +41,3 @@ def register(request):
         return HttpResponseRedirect('/login',{"messages":messages})
 
     return render(request,'registration/register.html')
-
