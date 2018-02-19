@@ -85,7 +85,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'videochat',
         'USER': 'root',
-        'PASSWORD': 'password',
+        'PASSWORD': '123',
         'HOST': '',
         'PORT': '',
     }

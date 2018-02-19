@@ -4,5 +4,4 @@ from . import views
 urlpatterns = [
 	url(r'^$', views.home, name='home'),
 	url(r'videochat', views.videochat, name='videochat' ),
-	url(r'^register/$',views.register,name='register'),
 ]
