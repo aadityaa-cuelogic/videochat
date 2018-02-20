@@ -23,8 +23,8 @@
                 <div class="collapse navbar-collapse" id="myNavbar">
                     {% if user.is_authenticated %}
                         <ul class="nav navbar-nav">
-                            <li><a href="{% url 'videochat' roomkey='jhfdshf1232' %}">Session</a></li>
-                            <li><a href="{% url 'create_conference' %}">Create Conference</a></li>
+                            <li><a href="{% url 'joinvideochat' roomkey='jhfdshf1232' %}">Join Video Conference</a></li>
+                            <li><a href="{% url 'createvideochatroom' %}">Create Video Conference</a></li>
                             <li><a href="/blog/listblog">List Blog</a></li>
                             <li><a href="/blog/all_blog">All Blogs</a></li>
                         </ul>
