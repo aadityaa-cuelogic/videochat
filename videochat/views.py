@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User 
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-
+from django.contrib.auth.hashers import make_password
 
 def register(request):
     if request.method == 'POST':

@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
 # Create your views here.
 def home(request):
 	return render(request, 'videochatapp/home.html')
@@ -11,5 +13,9 @@ def videochat(request,roomkey):
 @login_required(login_url='/login/')
 def create_conference(request):
 
-	return render(request, 'videochatapp/create_conference.html')	
+	users = User.objects.all().exclude(id=request.user.id)
+
+	if users:
+		return render(request, 'videochatapp/create_conference.html',{"users":users})	
+
 	

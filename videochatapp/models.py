@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.utils import timezone
+
 # Create your models here.
 
 
@@ -15,8 +17,8 @@ class ConferenceRoom(models.Model):
     metadata_id = models.CharField(max_length=255, blank=True, null=True, default=None)
     # json data for metadata field
     metadata_info = models.TextField()
-    start_time = models.DateTimeField(default=datetime.now())
-    end_time = models.DateTimeField(default=datetime.now())
+    start_time = models.DateTimeField(default=timezone.now())
+    end_time = models.DateTimeField(default=timezone.now())
     STATUS_CHOICES = (
         ('SCH','Scheduled'),
         ('COM','Completed'),
