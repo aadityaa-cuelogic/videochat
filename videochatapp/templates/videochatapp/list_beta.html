@@ -1,0 +1,32 @@
+{% extends 'videochatapp/base.html' %}
+{% load static %}
+{% block head %}
+{% endblock %} 
+
+{% block content %}
+    <div class="container">
+    <div class="table-responsive">
+        <table class="table results">
+        <tbody>
+        {% for data in data_list %}
+            <tr>
+                <td class="content-middle">
+                    <h3>{{ loop.index }}</h3>           
+                </td>
+                <td>
+                    <h3><a href=""></a>Conference</h3>
+                    <p>Start Time: {{ data.start_time }}</p>
+                    <p>End Time: {{ data.end_time }}</p>
+                    <p>No of Participant:{{ data.no_participants}}</p>
+                    <p>Role:{{ data.role.get_role_display }}</p>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>  
+</div>
+
+{% endblock %}
+{% block bottomcontent %}
+{% endblock %}
