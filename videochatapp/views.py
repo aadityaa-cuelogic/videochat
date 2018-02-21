@@ -87,12 +87,22 @@ def create_videochat_room(request):
 
 @login_required(login_url='/login/')
 def list_beta(request):
-    conferences = ConferenceRoom.objects.filter(owner = request.user).order_by('start_time')
-    conferences_list = {}
-    for conference in conferences:
-        no_count = ConferenceRoomParticipants.objects.filter(conferenceroom=conference).count()
-        
-    context = {"conferences":conferences}
-    return render(request, 'videochatapp/list_beta.html',context)    
+    conference_context = {}
+    conference_participants= ConferenceRoomParticipants.objects.filter(user=request.user)
+    count = ConferenceRoomParticipants.objects.filter(user=request.user).count()
+    data_list = list()
+    for conference_participant in conference_participants:
+        conference_context={
+            "conference":conference_participant.conferenceroom,
+            "start_time":conference_participant.conferenceroom.start_time,
+            "end_time":conference_participant.conferenceroom.end_time,
+            "no_participants":ConferenceRoomParticipants.objects.filter(conferenceroom=conference_participant.conferenceroom).count(),
+            "role":conference_participant.role ,
+        }
+        data_list.append(conference_context)
+    import pdb
+    pdb.set_trace()
+    # conferences = ConferenceRoom.objects.filter(owner = request.user).order_by('start_time')
+    return render(request, 'videochatapp/list_beta.html',{"data_list":data_list})    
 
 
