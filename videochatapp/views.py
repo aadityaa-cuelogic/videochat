@@ -11,6 +11,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .models import (ConferenceRoom,
                     ConferenceRoomRoles, 
                     ConferenceRoomParticipants)
+from django.db.models import Q
+
 
 # Create your views here.
 def home(request):
@@ -24,6 +26,12 @@ def join_videochat(request, roomkey):
     """
     Function to show join videochat room
     """
+    conferenceroom = ConferenceRoom.objects.filter(room_key = roomkey)
+    is_participant = ConferenceRoomParticipants.objects.filter(Q(conferenceroom=conferenceroom)&Q(user=request.user))
+    if not is_participant:
+        return HttpResponse("Your are not Conference Participant")
+    if is_participant[0].role.role !='OWN' and conferenceroom != 'RUN':
+        return HttpResponse("Conference is not started yet.")
     return render(request, 'videochatapp/videochat.html',{'roomkey':roomkey})
 
 @login_required(login_url='/login/')
@@ -87,6 +95,9 @@ def create_videochat_room(request):
 
 @login_required(login_url='/login/')
 def list_beta(request):
+    """ 
+        Function to list all conferences of requested user 
+    """
     conference_context = {}
     conference_participants= ConferenceRoomParticipants.objects.filter(user=request.user)
     count = ConferenceRoomParticipants.objects.filter(user=request.user).count()
@@ -100,8 +111,6 @@ def list_beta(request):
             "role":conference_participant.role ,
         }
         data_list.append(conference_context)
-    import pdb
-    pdb.set_trace()
     # conferences = ConferenceRoom.objects.filter(owner = request.user).order_by('start_time')
     return render(request, 'videochatapp/list_beta.html',{"data_list":data_list})    
 

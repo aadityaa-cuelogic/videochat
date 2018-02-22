@@ -14,7 +14,7 @@
                     <h3>{{ loop.index }}</h3>           
                 </td>
                 <td>
-                    <h3><a href=""></a>Conference</h3>
+                    <h3><a href="{% url 'joinvideochat' roomkey=data.conference.room_key %}">Conference</a></h3>
                     <p>Start Time: {{ data.start_time }}</p>
                     <p>End Time: {{ data.end_time }}</p>
                     <p>No of Participant:{{ data.no_participants}}</p>
