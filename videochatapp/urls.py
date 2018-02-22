@@ -6,6 +6,6 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^videochat/(?P<roomkey>[a-zA-Z0-9]+)/join$',views.join_videochat,name="joinvideochat"),
     url(r'^videochat/createvideochatroom/$',views.create_videochat_room,name="createvideochatroom"),
-    url(r'^listbeta/$',views.list_beta,name="list_beta")
+    url(r'^listconferences/$',views.list_conferences,name="list_conferences")
 
 ]
