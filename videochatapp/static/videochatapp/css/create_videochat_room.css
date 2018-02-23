@@ -1,0 +1,21 @@
+.content-middle{
+	vertical-align:middle;
+}
+td{
+	vertical-align: middle !important;
+}
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table>tfoot > tr > td {
+  border-top: none;
+}
+.selected-participant-role{
+	width: 50%;
+}
+.input-style{
+	width:30%;
+	margin-bottom:20px;
+}
