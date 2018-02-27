@@ -1,10 +1,11 @@
 {% extends 'videochatapp/base.html' %}
 {% load static %}
 {% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'videochatapp/css/create_videochat_room.css' %}"/>
 {% endblock %} 
-
 {% block content %}
     <div class="container">
+        <h3 class="text-center">List of Participants</h3>
         <div class="table-responsive">
             <form id="createconference" method="POST">
                 {% csrf_token %}
@@ -12,17 +13,18 @@
                     <tbody>
                         {% for participant in participants %}
                             <tr class="participant-details">
+                                <td>{{ forloop.counter }}</td>
                                 <td class="content-middle participant-checkbox">
                                     <input type="checkbox" class="selected-participant" name="{{ participant.id }}" value="{{ participant.email }}">
                                 </td>
                                 <td class="participant-email">
-                                    {{ participant.email }}
+                                    <span>{{ participant.email }}</span>
                                 </td>
                                 <td class="participant-role">
                                     {% if participant.is_staff %}
-                                        Staff
+                                        <span>Staff</span>
                                     {% else %}
-                                        Student
+                                        <span>Student</span>
                                     {% endif %}
                                 </td>
                                 <td class="participant-roles-listing">
@@ -37,9 +39,8 @@
                     </tbody>
                 </table>
                 <div class="form-group">
-                    Start Time <input id="start-time" name="start-time" class="form-control" type="text" required>
-                    &nbsp;&nbsp; 
-                    End Time <input id="end-time" name="end-time" class="form-control" type="text" required>
+                    <span>Start Time</span><input id="start-time" name="start-time" class="form-control input-style" type="text" required> 
+                    <span>End Time<span><input id="end-time" name="end-time" class="form-control input-style" type="text" required>
                 </div>
                 <div class="form-group">
                     <input id="create-bt" class="btn btn-primary" type = "submit" name="submit" value="Create Conference">
@@ -49,5 +50,13 @@
     </div>
 {% endblock %}
 {% block bottomcontent %}
- <script src="{% static 'videochatapp/js/create_videochat_room.js' %}"></script>
+<script src="{% static 'videochatapp/js/create_videochat_room.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.full.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.js"></script>
+<script>
+    jQuery('#start-time').datetimepicker();
+    jQuery('#end-time').datetimepicker();
+</script>
 {% endblock %}

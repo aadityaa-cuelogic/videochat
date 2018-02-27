@@ -1,6 +1,7 @@
 {% extends 'videochatapp/base.html' %}
 {% load static %}
 {% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'videochatapp/css/list_conferences.css' %}"/>
 {% endblock %} 
 
 {% block content %}
@@ -11,14 +12,23 @@
         {% for data in data_list %}
             <tr>
                 <td class="content-middle">
-                    <h3>{{ loop.index }}</h3>           
+                    <h3>{{ forloop.counter }}</h3>           
                 </td>
                 <td>
-                    <h3><a href="{% url 'joinvideochat' roomkey=data.conference.room_key %}">Conference</a></h3>
-                    <p>Start Time: {{ data.start_time }}</p>
-                    <p>End Time: {{ data.end_time }}</p>
-                    <p>No of Participant:{{ data.no_participants}}</p>
-                    <p>Role:{{ data.role.get_role_display }}</p>
+                    <h3 class="inline-heading"><a href="{% url 'joinvideochat' roomkey=data.conference.room_key %}">Conference</a></h3>
+                    
+                </td>
+                <td>
+                    <p class="margin-tp para-content"><strong>Start Time:</strong>{{ data.start_time }}</p>
+                </td>
+                <td>
+                    <p class="margin-tp para-content"><strong>End Time:</strong>{{ data.end_time }}</p>
+                </td>
+                <td>
+                    <p class="margin-tp para-content"><strong>No of Participant:</strong>{{ data.no_participants}}</p>
+                </td>
+                <td>
+                    <p class="margin-tp para-content"><strong>Role:</strong>{{ data.role.get_role_display }}</p>
                 </td>
             </tr>
         {% endfor %}
