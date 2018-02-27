@@ -12,6 +12,7 @@ class ConferenceRoom(models.Model):
     """
     id = models.AutoField(primary_key=True)
     room_key = models.CharField(max_length=32, blank=False, db_index=True)
+    title = models.CharField(max_length=255, blank=True, null=True, default=None)
     owner = models.ForeignKey(User)
     # metadata id is ref to metadata field
     metadata_id = models.CharField(max_length=255, blank=True, null=True, default=None)
@@ -75,3 +76,33 @@ class ConferenceRoomParticipants(models.Model):
     last_seen_heartbeat = models.DateTimeField(null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class ConferenceRoomRecording(models.Model):
+    """
+    A class to maintain recorded conference videos
+    """
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, blank=True, null=True, default=None)
+    user = models.ForeignKey(User)
+    conferenceroom = models.ForeignKey(ConferenceRoom)
+    video_file = models.FileField(upload_to='conferenceroom/mp4/',
+                                    blank=True,
+                                    null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+# TODO : Remove if not required in future
+# class ConferenceRoomConvertedRecording(models.Model):
+#     """
+#     A class to maintain conveted recorded conference videos
+#     """
+#     id = models.AutoField(primary_key=True)
+#     name = models.CharField(max_length=255, blank=True, null=True, default=None)
+#     user = models.ForeignKey(User)
+#     conferenceroom = models.ForeignKey(ConferenceRoom)
+#     converted_video = models.FileField(upload_to='conferenceroom/mp4/',
+#                                         blank=True,
+#                                         null=True)
+#     created_on = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)

@@ -1,36 +1,4 @@
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') 
-    { 
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-
 $(document).ready(function() {
-    
-    var csrftoken = getCookie('csrftoken');
-
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-            }
-    });
 
     $('#createconference').on('submit',function(event){
         event.preventDefault();
@@ -65,15 +33,25 @@ $(document).ready(function() {
             return false;
         }
         var data = {}
+        participants['title'] = $(this).find('.conf-title').val();
         participants['starttime']=startime
         participants['endtime']=endtime
         data = {'data': JSON.stringify(participants)}
         $.ajax({
             url: '/videochat/createvideochatroom/',
+            type: 'POST',
+            headers: {
+              'X-CSRFToken': $.cookie('csrftoken')
+            },
+            dataType:'json',
+            processData: false,
+            contentType: false,
+            beforeSend:function(){
+                console.log("beforeSend=>",data);
+            },
             data: data,
-            dataType: 'json',
-            type: 'post',
             success: function (result) {
+                console.log(response,'===error response===');
                 alert(result['message']);
                 window.location.href = "/";
             }
