@@ -10,6 +10,14 @@
                 {% csrf_token %}
                 <table class="table results conference-table-data">
                     <tbody>
+                        <tr>
+                            <td colspan=2>Add Event Title</td>
+                            <td colspan=2>
+                                <div class="form-group">
+                                    <input type="text" class="form-control conf-title" name="conf-title" placeholder="Add Event Title" required>
+                                </div>
+                            </td>
+                        </tr>
                         {% for participant in participants %}
                             <tr class="participant-details">
                                 <td class="content-middle participant-checkbox">

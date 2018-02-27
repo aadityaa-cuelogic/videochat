@@ -4,6 +4,7 @@
 var connection = new RTCMultiConnection();
 var recordRTC;
 var initiator_stream ;
+var recordingStreamsIdArray=[];
 // socket.io server
 connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
 
@@ -50,11 +51,24 @@ var remoteVideo = document.getElementById('remote-video-container');
 var openButton= document.getElementById('btn-open-or-join');
 
 connection.onstream = function(event){
-    if(connection.isInitiator==false){
+    if(connection.isInitiator==false && recordRTC == undefined){
         var recording_container = $('#recording-container');
         recording_container.html(recording_button);
         addRecordingEvent(recording_container);
         $(recording_container).find('.btn-stop-recodring').hide();
+    }
+    if (recordRTC && recordRTC.getState() == 'recording'){
+        var recordingObj = recordRTC.getInternalRecorder();
+        var all_participants = connection.getAllParticipants();
+        all_participants.forEach(function(userid){
+            var tmp_stream = connection.peers[userid].streams[0];
+            var tmp_streamid = tmp_stream.streamid;            
+            if($.inArray(tmp_streamid, recordingStreamsIdArray) == -1){
+                var internal_recordRTC_Obj = recordRTC.getInternalRecorder();
+                internal_recordRTC_Obj.addStreams([tmp_stream]);
+            }
+            
+        });
     }
     if(event.stream.isScreen === true && connection.isInitiator==true) {
         // width = connection.videosContainer.clientWidth - 120;
@@ -264,37 +278,28 @@ function share_fun(){
     });
 }
 
-// document.getElementsByClassName('btn-share')[0].onclick = function() {
-//     connection.session['screen']=true
-//     this.disabled = true;
-//     connection.addStream({
-//         screen: true,
-//         oneway: true
-//     });
-// };
-
 function record_fun(){
-    // video = this.parentNode.nextElementSibling;
-    // id = connection.streamEvents[video.id].stream.id
-    // stream = connection.streamEvents[video.id].stream
-    
     var recording_container = $('#recording-container');
     $(recording_container).find('.btn-recording').hide();
     recording_container.find('.btn-stop-recodring').show();
-    alert("Recording Of Conference Is Started");
-    var i;
-    stream = connection.peers[connection.sessionid].streams[0]
-    for(i=0;i<connection.getRemoteStreams().length;i++){
-        if(stream == connection.getRemoteStreams()[i]){
-            stream = connection.getRemoteStreams()[i];
-            break;
+    console.log("Recording Of Conference Is Started");
+    var streamsArray = []
+    connection.attachStreams.forEach(function(stream) {
+        streamsArray.push(stream);
+        recordingStreamsIdArray.push(stream.streamid);// add current stream
+    });
+    connection.getAllParticipants().forEach(function(userid) {
+        recordingStreamsIdArray.push(connection.peers[userid].streams[0].streamid);// add remote streams
+        if(connection.sessionid != userid){
+            streamsArray.push(connection.peers[userid].streams[0]);
+        }else{
+            var audioStream = connection.peers[userid].streams[0];
+            var videoTrack = audioStream.getTracks()[1];
+            audioStream.removeTrack(videoTrack);
+            streamsArray.push(audioStream);
+            audioStream.addTrack(videoTrack);
         }
-    }
-
-
-    if(stream == undefined){
-        console.log("stream is undefined")
-    }
+    });
 
     var options = {
         mimeType: 'video/webm', // or video/webm\;codecs=h264 or video/webm\;codecs=vp9
@@ -302,62 +307,50 @@ function record_fun(){
         // videoBitsPerSecond: 128000,
         bitsPerSecond: 128000 // if this line is provided, skip above two
     };
-
-    recordRTC = RecordRTC(stream, options);
+    recordRTC = RecordRTC(streamsArray, options);
     recordRTC.startRecording();
 }
 
 function postFiles(){
     var recordedBlob = recordRTC.getBlob();
     console.log(recordedBlob);
-    var fileName = generateRandomString() + '.webm';
+    // TODO : File Name = roomkey_userid_timestamp.webm
+    var fileName = room_id.value+'_'+ $.now().toString() + '.webm';
     var file = new File([recordedBlob], fileName, {
                     type: 'video/webm'
                 });
-    xhr('videoconverter/', file, function(responseText) {
-        alert(responseText);
+    var data = new FormData();
+    data.append('file', file);
+    data.append('room', room_id.value);
+    $.ajax({
+        url: '/videochat/recordconference',
+        method:'POST',
+        headers: {
+          'X-CSRFToken': $.cookie('csrftoken')
+        },
+        dataType:'json',
+        processData: false,
+        contentType: false,
+        beforeSend:function(){
+            console.log("beforeSend=>",data);
+        },
+        data:data,
+        success:function(response){
+            console.log(response,'===success response===');
+        },
+        error:function(response){
+            console.log(response,'===error response===');
+        }
     });
 }
 
-function xhr(url, data, callback) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (request.readyState == 4 && request.status == 200) {
-            callback(request.responseText);
-        }
-    };
-    request.open('POST', url);
-    var formData = new FormData();
-    formData.append('file', data);
-    request.send(formData);
-}
-
-function generateRandomString() {
-    if (window.crypto) {
-        var a = window.crypto.getRandomValues(new Uint32Array(3));
-        var token = '';
-        for (var i = 0, l = a.length; i < l; i++) token += a[i].toString(36);
-        return token;
-    } else {
-        return (Math.random() * new Date().getTime()).toString(36).replace( /\./g , '');
-    }
-}
-
-function stop_record_fun(){    
+function stop_record_fun(){
+    recordingStreamsIdArray = []; //EMpty gobal array for streams on stop record
     var recording_container = $('#recording-container');
     $(recording_container).find('.btn-stop-recodring').hide();
     $(recording_container).find('.btn-recording').show();
-    alert("Recording Of Conference Is Stop.");
+    console.log("Recording Of Conference Is Stop.");
     var video =  document.getElementById('recording');
     var recordedBlob;
-    // recordRTC.stopRecording(function () {
-        
-    //     recordedBlob = recordRTC.getBlob();
-        //var url = URL.createObjectURL(recordedBlob);
-        // video.src = url;
-        //convertStreams(recordedBlob);
-
-        //window.open(url);
-    //});
     recordRTC.stopRecording(postFiles)
 }

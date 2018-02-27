@@ -25,7 +25,7 @@ SECRET_KEY = 'e7x8$%_#y0h6k%ioor8fy#(k81nour9!eogpb0m9d=ke!w3^f1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -113,3 +113,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT='static'
 TEMPLATE_DIRS = ('videochatapp/templates',)
 LOGIN_REDIRECT_URL = '/'
+
+MEDIA_ROOT=os.path.join(BASE_DIR,"conferenceroom_media")
+MEDIA_URL='/conferenceroom_media/'

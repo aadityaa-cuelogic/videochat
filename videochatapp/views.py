@@ -8,8 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import (ConferenceRoom,
-                    ConferenceRoomRoles, 
-                    ConferenceRoomParticipants)
+                    ConferenceRoomRoles,
+                    ConferenceRoomParticipants,
+                    ConferenceRoomRecording)
+import subprocess
+from django.conf import settings
+from django.core.files import File
+import os
 
 # Create your views here.
 def home(request):
@@ -27,8 +32,8 @@ def join_videochat(request, roomkey):
     is_participant = ConferenceRoomParticipants.objects.filter(conferenceroom=conferenceroom,user=request.user)
     if not is_participant:
         return HttpResponse("Your are not Conference Participant")
-    if is_participant[0].role.role !='OWN' and conferenceroom != 'RUN':
-        return HttpResponse("Conference is not started yet.")
+    # if is_participant[0].role.role !='OWN' and conferenceroom != 'RUN':
+    #     return HttpResponse("Conference is not started yet.")
     return render(request, 'videochatapp/videochat.html',{'roomkey':roomkey})
 
 @login_required(login_url='/login/')
@@ -47,8 +52,12 @@ def create_videochat_room(request):
             end_time = pytz.utc.localize(end_time)
             del data['starttime']
             del data['endtime']
+            conf_title = data['title']
+            if not conf_title:
+                conf_title = "Default title"
             key_value = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
             conference_room = ConferenceRoom(room_key = key_value,
+                                            title = conf_title,
                                             owner = request.user,
                                             start_time = start_time,
                                             end_time = end_time
@@ -116,3 +125,47 @@ def list_conferences(request):
     return render(request, 'videochatapp/list_conferences.html',{"data_list":data_list})    
 
 
+def record_conference(request):
+    """
+    Function to record video confenrence and conver to mp4
+    """
+    if request.method == 'POST':
+        try:
+            input_file = request.FILES.get('file', None)
+            room_key = request.POST.get('room', None)
+            user = request.user
+        except:
+            return HttpResponse(400)
+        try:
+            input_file_name = str(request.FILES['file'].name)
+            conferenceroom = ConferenceRoom.objects.get(room_key=room_key)
+        except:
+            return HttpResponse(404)
+        try:
+            conferenceroomrecording_obj = ConferenceRoomRecording.objects.create(
+                                            name=input_file_name,
+                                            user=user,
+                                            conferenceroom=conferenceroom,
+                                            video_file=input_file
+                                        )
+        except:
+            return HttpResponse(400)
+        try:
+            output_file_name = conferenceroomrecording_obj.video_file.name.split(".")[0]
+            input_file = settings.MEDIA_ROOT+'/'+conferenceroomrecording_obj.video_file.name
+            outputfile = settings.MEDIA_ROOT+'/'+output_file_name+'.mp4'
+            subprocess.call(['ffmpeg','-i',input_file,'-strict',
+                            'experimental',outputfile])
+            recorded_file_webm_path = conferenceroomrecording_obj.video_file.path
+        except:
+            conferenceroomrecording_obj.delete()
+            return HttpResponse(400)
+        try:
+            fileopen = open(outputfile, 'rb')
+            conferenceroomrecording_obj.video_file = File(fileopen)
+            conferenceroomrecording_obj.save()
+            os.remove(recorded_file_webm_path)
+            os.remove(outputfile)
+        except:
+            return HttpResponse(400)
+        return HttpResponse(200)
