@@ -24,8 +24,11 @@
                 <div class="collapse navbar-collapse" id="myNavbar">
                     {% if user.is_authenticated %}
                         <ul class="nav navbar-nav">
+                        {% if user.is_staff %}    
                             <li><a href="{% url 'createvideochatroom' %}">Create Beta</a></li>
+                        {% endif %} 
                             <li><a href="{% url 'list_conferences' %}">List Beta</a></li>
+                        
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="{% url 'logout' %}?next={% url 'home' %}">Logout</a></li>

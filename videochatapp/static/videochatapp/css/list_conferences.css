@@ -1,0 +1,10 @@
+.inline-heading{
+	display:inline-block;	
+}
+
+.para-content{
+	font-family: Heveltica;
+}
+a{
+	text-decoration: none !important;
+}

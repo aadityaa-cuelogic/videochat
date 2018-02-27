@@ -32,14 +32,18 @@ def join_videochat(request, roomkey):
     is_participant = ConferenceRoomParticipants.objects.filter(conferenceroom=conferenceroom,user=request.user)
     if not is_participant:
         return HttpResponse("Your are not Conference Participant")
-    # if is_participant[0].role.role !='OWN' and conferenceroom != 'RUN':
-    #     return HttpResponse("Conference is not started yet.")
+    if is_participant[0].role.role == 'OWN' and conferenceroom[0].status != 'RUN':
+        conferenceroom[0].status='RUN'
+        conferenceroom[0].save()               
+    if is_participant[0].role.role !='OWN' and conferenceroom[0].status != 'RUN':
+        return HttpResponse("Conference is not started yet.")
     return render(request, 'videochatapp/videochat.html',{'roomkey':roomkey})
 
 @login_required(login_url='/login/')
 def create_videochat_room(request):
     """
     Function to create videochat room
+    
     """
     if request.method == 'POST':
         try:

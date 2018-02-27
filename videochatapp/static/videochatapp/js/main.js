@@ -26,7 +26,7 @@ var room_id = document.getElementById('roomid');
 // if (localStorage.getItem('room_id')) {
 //     room_id.value = localStorage.getItem('room_id');
 // } else {
-    // room_id.value = connection.token();
+    //room_id.value = connection.token();
     // localStorage.setItem('room_id', room_id.value);
 // }
 
