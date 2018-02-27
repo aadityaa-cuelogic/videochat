@@ -80,7 +80,6 @@ $(document).ready(function() {
         });
     });
     validate_date_time = function(input){
-        debugger;
         input=input.split(" ");
         time=input[1].split(":");
         hours=time[0];
