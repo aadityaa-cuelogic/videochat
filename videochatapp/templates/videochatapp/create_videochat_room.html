@@ -1,24 +1,29 @@
 {% extends 'videochatapp/base.html' %}
 {% load static %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="{% static 'videochatapp/css/create_videochat_room.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'videochatapp/css/create_videochat_room.css' %}"/>
 {% endblock %} 
 {% block content %}
     <div class="container">
-        <h3 class="text-center">List of Participants</h3>
         <div class="table-responsive">
             <form id="createconference" method="POST">
                 {% csrf_token %}
+                <div>
+                    <div class="form-group">
+                        <lable><b>Add Event Title</b></label>
+                        <input type="text" class="form-control conf-title" name="conf-title" placeholder="Add Event Title" required>
+                    </div>
+                </div>
                 <table class="table results conference-table-data">
+                    <thead>
+                        <td><h3>Sr No</h3>
+                        <td>
+                        <td><h3>Participant
+                        <td><h3>Participant Type
+                        <td><h3>Participant Role
+                        <td><h3>Extra Privilege</h3>
+                    </thead>
                     <tbody>
-                        <tr>
-                            <td colspan=2>Add Event Title</td>
-                            <td colspan=2>
-                                <div class="form-group">
-                                    <input type="text" class="form-control conf-title" name="conf-title" placeholder="Add Event Title" required>
-                                </div>
-                            </td>
-                        </tr>
                         {% for participant in participants %}
                             <tr class="participant-details">
                                 <td>{{ forloop.counter }}</td>
@@ -36,9 +41,16 @@
                                     {% endif %}
                                 </td>
                                 <td class="participant-roles-listing">
-                                    <select class="form-control selected-participant-role" name="roles">
+                                    <select class="form-control selected-participant-role" name="roles" onload="setDefaultPrivilege($(this));">
                                         {% for role in participants_roles %}
-                                            <option value="{{ role.role }}">{{ role.get_role_display }}</option>
+                                            <option value="{{ role.role }}" defaultprivileges="{{role.default_privileges}}">{{ role.get_role_display }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td class="participant-privileges-listing">
+                                    <select class="form-control selected-participant-privilege" name="privilege[]" multiple>
+                                        {% for privilege in participants_privileges %}
+                                            <option value="{{ privilege.privilege_type }}">{{ privilege.privilege_type |title }}</option>
                                         {% endfor %}
                                     </select>   
                                 </td>

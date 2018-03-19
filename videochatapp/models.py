@@ -34,29 +34,45 @@ class ConferenceRoom(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
 class ConferenceRoomRoles(models.Model):
     """
-    A class to define User role permissions in ConferenceRoom
+    A class to define User roles in ConferenceRoom
     """
     id = models.AutoField(primary_key=True)
     ROLE_CHOICES = (
         ('OWN', 'Owner'),
-        ('OPA', 'OnlyParticipant'),
-        ('SOP', 'ShareOnlyParticipant'),
-        ('ROP', 'RecordOnlyParticipant'),
-        ('SRP', 'ShareRecordParticipant'),
         ('MOD', 'Moderator'),
+        ('PRE', 'Presenter'),
+        ('ATD', 'Attendee'),
     )
     role = models.CharField(max_length=3,
                             choices=ROLE_CHOICES,
                             default='OPA')
-    allow_screen_share = models.BooleanField(default=False)
-    allow_record_video = models.BooleanField(default=False)
-    allow_mute_management = models.BooleanField(default=False)
-    allow_remove_user = models.BooleanField(default=False)
-    allow_block_user = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class ConferenceRoomPrivileges(models.Model):
+    """
+    A class to define User permissions in ConferenceRoom
+    """
+    id = models.AutoField(primary_key=True)
+    privilege_type = models.CharField(max_length=255, blank=True, null=True, default=None)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class ConferenceRoomRolePrivilegeMap(models.Model):
+    """
+    A class to define mapping between Roles & permissions
+    """
+    id = models.AutoField(primary_key=True)
+    role = models.ForeignKey(ConferenceRoomRoles)
+    privilege = models.ForeignKey(ConferenceRoomPrivileges)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 class ConferenceRoomParticipants(models.Model):
     """
@@ -74,8 +90,10 @@ class ConferenceRoomParticipants(models.Model):
                             choices=STATUS_CHOICES,
                             default='ALW')
     last_seen_heartbeat = models.DateTimeField(null=True)
+    special_privilege = models.CharField(max_length=255, blank=True, null=True, default=None)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
 class ConferenceRoomRecording(models.Model):
     """

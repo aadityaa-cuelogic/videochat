@@ -1,0 +1,109 @@
+{% extends 'videochatapp/base.html' %}
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'videochatapp/css/create_videochat_room.css' %}"/>
+{% endblock %} 
+{% block content %}
+    <div class="container">
+        <div class="table-responsive">
+            <form id="editconference" method="POST">
+                {% csrf_token %}
+                <table class="table results conference-table-data">
+                    <thead>
+                        {% if user_listing_privilege %}
+                            <td><h3>Sr No</h3>
+                            <td>
+                            <td><h3>Participant
+                            <td><h3>Participant Type
+                            <td><h3>Participant Role
+                            {% if manage_privilege_for_user_privilege %}
+                                <td><h3>Extra Privilege</h3>
+                            {% endif %}
+                        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% if event_schedule_privilege %}
+                            <tr>
+                                <td colspan=3>Add Event Title</td>
+                                <td colspan=3>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control conf-title" name="conf-title" placeholder="Add Event Title" value="{{ conferenceroom.title | title }}" required>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+
+                        {% if user_listing_privilege %}
+                            {% for participant in participants %}
+                                <tr class="participant-details">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td class="content-middle participant-checkbox">
+                                        {% if participant.role %}
+                                            <input type="checkbox" class="selected-participant" name="{{ participant.id }}" value="{{ participant.email }}" checked>
+                                        {% else %}
+                                            <input type="checkbox" class="selected-participant" name="{{ participant.id }}" value="{{ participant.email }}">
+                                        {% endif %}
+                                    </td>
+                                    <td class="participant-email">
+                                        <span>{{ participant.email }}</span>
+                                    </td>
+                                    <td class="participant-role">
+                                        {% if participant.is_staff %}
+                                            <span>Staff</span>
+                                        {% else %}
+                                            <span>Student</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="participant-roles-listing">
+                                        <select class="form-control selected-participant-role" name="roles">
+                                            {% for role in participants_roles %}
+                                                {% if participant.role and participant.role == role.role %}
+                                                    <option value="{{ role.role }}" selected="selected" defaultprivileges="{{role.default_privileges}}">{{ role.get_role_display }}</option>
+                                                {% else %}
+                                                    <option value="{{ role.role }}" defaultprivileges="{{role.default_privileges}}">{{ role.get_role_display }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>   
+                                    </td>
+                                    {% if manage_privilege_for_user_privilege %}
+                                        <td class="participant-privileges-listing">
+                                            <select class="form-control selected-participant-privilege" name="privilege[]" multiple>
+                                                {% for privilege in participants_privileges %}
+                                                    {% if participant.special_privilege and privilege.privilege_type in participant.special_privilege %}
+                                                        <option value="{{ privilege.privilege_type }}" selected="selected">{{ privilege.privilege_type |title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ privilege.privilege_type }}">{{ privilege.privilege_type |title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>   
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+                {% if event_schedule_privilege %}
+                    <div class="form-group">
+                        <span>Start Time</span><input id="start-time" name="start-time" class="form-control input-style" type="text" value="{{ conferenceroom.start_time|date:'Y/m/d H:i' }}" required> 
+                        <span>End Time<span><input id="end-time" name="end-time" class="form-control input-style" type="text" value="{{ conferenceroom.end_time|date:'Y/m/d H:i' }}" required>
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    <input id="create-bt" rel={{conferenceroom.id}} class="btn btn-primary" type="submit" name="submit" value="Update Conference" data-event_schedule_privilege="{{event_schedule_privilege}}" data-user_listing_privilege="{{user_listing_privilege}}">
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block bottomcontent %}
+<script src="{% static 'videochatapp/js/create_videochat_room.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.full.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.18/jquery.datetimepicker.js"></script>
+<script>
+    jQuery('#start-time').datetimepicker();
+    jQuery('#end-time').datetimepicker();
+</script>
+{% endblock %}

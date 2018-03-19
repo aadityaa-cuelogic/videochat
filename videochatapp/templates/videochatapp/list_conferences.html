@@ -15,7 +15,7 @@
                     <h3>{{ forloop.counter }}</h3>           
                 </td>
                 <td>
-                    <h3 class="inline-heading"><a href="{% url 'joinvideochat' roomkey=data.conference.room_key %}">Conference</a></h3>
+                    <h3 class="inline-heading"><a href="{% url 'joinvideochat' roomkey=data.conference.room_key %}">{{ data.conference.title |title }}</a></h3>
                     
                 </td>
                 <td>
@@ -30,6 +30,18 @@
                 <td>
                     <p class="margin-tp para-content"><strong>Role:</strong>{{ data.role.get_role_display }}</p>
                 </td>
+                {% if data.show_edit_btn or data.show_cancel_btn %}
+                    <td>
+                        <p class="margin-tp para-content">
+                            {% if data.show_edit_btn %}
+                                <button class="edit-conference" id="{{data.conference.id}}">Edit</button>
+                            {% endif %}
+                            {% if data.show_cancel_btn %}
+                                <button class="cancel-conference" id="{{data.conference.id}}">Cancel</button>
+                            {% endif %}
+                        </p>
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>
@@ -39,4 +51,5 @@
 
 {% endblock %}
 {% block bottomcontent %}
+<script src="{% static 'videochatapp/js/list_videochat_room.js' %}"></script>
 {% endblock %}
