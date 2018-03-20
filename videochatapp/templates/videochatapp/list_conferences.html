@@ -15,8 +15,14 @@
                     <h3>{{ forloop.counter }}</h3>           
                 </td>
                 <td>
-                    <h3 class="inline-heading"><a href="{% url 'joinvideochat' roomkey=data.conference.room_key %}">{{ data.conference.title |title }}</a></h3>
-                    
+                    {% if data.conference.status == 'CAN' %}
+                        <h3 class="inline-heading"><a href="javascript:void(0);">{{ data.conference.title |title }}</a></h3>
+                    {% else %}
+                        <h3 class="inline-heading"><a href="{% url 'joinvideochat' roomkey=data.conference.room_key %}">{{ data.conference.title |title }}</a></h3>
+                    {% endif %}
+                </td>
+                <td>
+                    <p class="margin-tp para-content"><strong>Conference Status:</strong>{{ data.conference.get_status_display | title }}</p>
                 </td>
                 <td>
                     <p class="margin-tp para-content"><strong>Start Time:</strong>{{ data.start_time }}</p>
