@@ -154,7 +154,31 @@ connection.onstream = function(event){
 document.getElementById('btn-open-or-join').onclick = function(){
     this.disabled = true;
     $('#roomid').prop('disabled',true);
-    connection.openOrJoin(room_id.value || 'predefined-roomid');
+    $.ajax({
+        url: '/videochat/start',
+        method:'POST',
+        headers: {
+          'X-CSRFToken': $.cookie('csrftoken')
+        },
+        dataType:'json',
+        beforeSend:function(){
+            console.log("beforeSend=>");
+        },
+        data:{
+            'roomkey':room_id.value
+        },
+        success:function(response){
+            console.log(response,'===success response===');
+            if (response.status == 'RUN'){
+                connection.openOrJoin(room_id.value || 'predefined-roomid');
+            }else{
+                location.href = '/'
+            }
+        },
+        error:function(response){
+            console.log(response,'===error response===');
+        }
+    });
 }
 
 connection.onEntireSessionClosed = function(event) {
@@ -257,16 +281,63 @@ function minus_fun(){
 
 function exit_fun() {
     if (connection.isInitiator) {
-        connection.closeEntireSession(function() {
-            // TODO : Correct this code line for remove
-            $('.btnPanel').remove();
+        $.ajax({
+            url: '/videochat/end',
+            method:'POST',
+            headers: {
+              'X-CSRFToken': $.cookie('csrftoken')
+            },
+            dataType:'json',
+            beforeSend:function(){
+                console.log("beforeSend=>");
+            },
+            data:{
+                'roomkey':room_id.value
+            },
+            success:function(response){
+                console.log(response,'===success response===');
+                connection.closeEntireSession(function() {
+                    // TODO : Correct this code line for remove
+                    $('.btnPanel').remove();
+                });
+                setTimeout(function(){
+                    connection.closeSocket();
+                    location.href = '/';
+                }, 5000);
+            },
+            error:function(response){
+                console.log(response,'===error response===');
+            }
         });
     } else {
-        connection.leave();
-        connection.attachStreams.forEach(function(stream) {
-            stream.stop();
+        $.ajax({
+            url: '/videochat/end',
+            method:'POST',
+            headers: {
+              'X-CSRFToken': $.cookie('csrftoken')
+            },
+            dataType:'json',
+            beforeSend:function(){
+                console.log("beforeSend=>");
+            },
+            data:{
+                'roomkey':room_id.value
+            },
+            success:function(response){
+                console.log(response,'===success response===');
+                connection.leave();
+                connection.attachStreams.forEach(function(stream) {
+                    stream.stop();
+                });
+                $('#recording-container').remove();
+                setTimeout(function(){
+                    location.href = '/';
+                }, 5000);
+            },
+            error:function(response){
+                console.log(response,'===error response===');
+            }
         });
-        $('#recording-container').remove();
     }
 }
 

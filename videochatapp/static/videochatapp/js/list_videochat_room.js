@@ -4,7 +4,7 @@ $(document).ready(function(){
 	$('.cancel-conference').on('click', function(e){
 		var _this = $(this);
 		var conf_room_id = _this.attr('id');
-		var confirm = confirm("Are you sure, you want to cancel conference ?");
+		var confirm = window.confirm("Are you sure, you want to cancel conference ?");
 		if(confirm){
 			$.ajax({
 				url:'/videochat/cancelconference',
@@ -12,7 +12,6 @@ $(document).ready(function(){
 				headers:{
 					'X-CSRFToken': $.cookie('csrftoken')
 				},
-				dataType:'json',
 				beforeSend:function(){
 					console.log("beforeSend");
 				},

@@ -10,5 +10,8 @@ urlpatterns = [
     url(r'^videochat/(?P<conferenceroomid>\d+)/editconference/', 
                 views.edit_videochat_conference, name="editconference"),
     url(r'^videochat/listconferences/$',views.list_videochat,name="listconferences"),
-    url(r'^videochat/cancelconference/$', views.cancel_videochat, name="cancelconference"),
+    url(r'^videochat/cancelconference$', views.cancel_videochat, name="cancelconference"),
+
+    url(r'^videochat/start$', views.start_videochat, name="startvideochat"),
+    url(r'^videochat/end$', views.end_videochat, name="endvideochat"),
 ]

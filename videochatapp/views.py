@@ -27,16 +27,100 @@ def join_videochat(request, roomkey):
     """
     Function to show join videochat room
     """
-    conferenceroom = ConferenceRoom.objects.filter(room_key=roomkey)
-    is_participant = ConferenceRoomParticipants.objects.filter(conferenceroom=conferenceroom,user=request.user)
-    if not is_participant:
+    try:
+        conferenceroom = ConferenceRoom.objects.get(room_key=roomkey)
+    except ConferenceRoom.DoesNotExist:
+        return HttpResponse("Conference is does not exists.")
+    try:
+        is_participant = ConferenceRoomParticipants.objects.get(conferenceroom=conferenceroom,user=request.user)
+    except ConferenceRoomParticipants.DoesNotExist:
         return HttpResponse("Your are not Conference Participant")
-    if is_participant[0].role.role == 'OWN' and conferenceroom[0].status != 'RUN':
-        conferenceroom[0].status='RUN'
-        conferenceroom[0].save()               
-    if is_participant[0].role.role !='OWN' and conferenceroom[0].status != 'RUN':
-        return HttpResponse("Conference is not started yet.")
+    try:
+        if conferenceroom.status != 'RUN':
+            if is_participant.role.role == 'OWN':
+                conferenceroom.status = 'RUN'
+                conferenceroom.save()
+            elif conferenceroom.status == 'COM':
+                return HttpResponse("Conference is ended.")
+            elif conferenceroom.status == 'CAN':
+                return HttpResponse("Conference is cancelled.")
+            elif conferenceroom.status == 'RES':
+                return HttpResponse("Conference is rescheduled.")
+            else:
+                return HttpResponse("Conference is yet to start.")
+    except:
+        return HttpResponse("Something went wrong")
     return render(request, 'videochatapp/videochat.html',{'roomkey':roomkey})
+
+@login_required(login_url='/login/')
+def start_videochat(request):
+    """
+    Function to update status of videochat room as running
+    """
+    if request.method == 'POST':
+        roomkey = request.POST.get('roomkey', None)
+        user = request.user
+        context = {
+            'msg': 'Conference has started',
+            'status': 'RUN'
+        }
+        try:
+            conferenceroom = ConferenceRoom.objects.get(room_key=roomkey)
+        except ConferenceRoom.DoesNotExist:
+            return HttpResponse(status=404)
+        try:
+            if conferenceroom.owner == user:
+                conferenceroom.status = 'RUN'
+                conferenceroom.save()
+                return HttpResponse(json.dumps(context), content_type='application/json',status=200)
+            elif conferenceroom.status == 'RUN':
+                context['msg'] = 'Conference is running'
+                return HttpResponse(json.dumps(context), content_type='application/json',status=200)
+            elif conferenceroom.status in ['CAN', 'RES']:
+                context['msg'] = 'Conference does not exist anymore'
+                context['status'] = 'CAN'
+                return HttpResponse(json.dumps(context), content_type='application/json',status=200)
+            elif conferenceroom.status == 'COM':
+                context['msg'] = 'Conference is ended'
+                context['status'] = 'COM'
+                return HttpResponse(json.dumps(context), content_type='application/json',status=200)
+            else:
+                context['msg'] = 'Conference is not started yet.'
+                context['status'] = 'SCH'
+                return HttpResponse(json.dumps(context), content_type='application/json',status=200)
+        except:
+            return HttpResponse(status=400)
+    else:
+        return HttpResponse(status=400)
+
+@login_required(login_url='/login/')
+def end_videochat(request):
+    """
+    Function to update status of videochat room as ended
+    """
+    if request.method == 'POST':
+        roomkey = request.POST.get('roomkey', None)
+        user = request.user
+        try:
+            conferenceroom = ConferenceRoom.objects.get(room_key=roomkey)
+        except ConferenceRoom.DoesNotExist:
+            return HttpResponse(status=404)
+        try:
+            context = {
+                'msg': 'Conference has ended',
+                'status': 'COM'
+            }
+            if conferenceroom.owner == user:
+                conferenceroom.status = 'COM'
+                conferenceroom.save()
+                return HttpResponse(json.dumps(context), content_type='application/json',status=200)
+            else:
+                context['msg'] = 'You have left conference'
+                return HttpResponse(json.dumps(context), content_type='application/json',status=200)
+        except:
+            return HttpResponse(status=400)
+    else:
+        return HttpResponse(status=400)
 
 @login_required(login_url='/login/')
 def create_videochat_room(request):
@@ -142,18 +226,23 @@ def list_videochat(request):
                          'event_management']
     cancel_btn_privilege = ['event_management']
     for conference_participant in conference_participants:
-        if conference_participant.special_privilege:
-            special_privilege = conference_participant.special_privilege.split(",")
+        if conference_participant.conferenceroom.status not in ['CAN']:
+            if conference_participant.special_privilege:
+                special_privilege = conference_participant.special_privilege.split(",")
+            else:
+                special_privilege = []
+            if conference_participant.role.role in ['OWN'] or [i for i in special_privilege if i in edit_btn_privilege]:
+                show_edit_btn = True
+            else:
+                show_edit_btn = False
+
+            if conference_participant.role.role in ['OWN'] or [i for i in special_privilege if i in cancel_btn_privilege]:
+                show_cancel_btn = True
+            else:
+                show_cancel_btn = False
         else:
             special_privilege = []
-        if conference_participant.role.role in ['OWN'] or [i for i in special_privilege if i in edit_btn_privilege]:
-            show_edit_btn = True
-        else:
             show_edit_btn = False
-
-        if conference_participant.role.role in ['OWN'] or [i for i in special_privilege if i in cancel_btn_privilege]:
-            show_cancel_btn = True
-        else:
             show_cancel_btn = False
 
         conference_context={
@@ -482,15 +571,15 @@ def cancel_videochat(request):
         # get conference
         try:
             conferenceroom = ConferenceRoom.objects.get(id=conf_room_id)
-        except:
-            return HttpResponse(404)
+        except ConferenceRoom.DoesNotExist:
+            return HttpResponse(status=404)
         # get current user from participants
         try:
-            conferenceroom_user = ConferenceRoomParticipants.objects.filter(
+            conferenceroom_user = ConferenceRoomParticipants.objects.get(
                                                     conferenceroom=conferenceroom,
                                                     user=user)
         except:
-            return HttpResponse(401)
+            return HttpResponse(status=401)
         # check current user role or privilege
         try:
             if conferenceroom_user.special_privilege:
@@ -503,17 +592,17 @@ def cancel_videochat(request):
                 for prv in conferenceroom_user.role.conferenceroomroleprivilegemap_set.all():
                     special_privilege.append(prv.privilege.privilege_type)
             except:
-                return HttpResponse(400)
+                return HttpResponse(status=400)
 
             check_privilege = [i for i in special_privilege if i in ['event_management']]
 
             if user == conferenceroom.owner or check_privilege:
-                ConferenceRoomParticipants.objects.filter(conferenceroom=conferenceroom).delete()
+                # ConferenceRoomParticipants.objects.filter(conferenceroom=conferenceroom).delete()
                 conferenceroom.status = 'CAN'
                 conferenceroom.save()
-                return HttpResponse(200)
-            return HttpResponse(401)
+                return HttpResponse(status=200)
+            return HttpResponse(status=401)
         except:
-            pass
+            return HttpResponse(status=400)
     else:
-        return HttpResponse(404)
+        return HttpResponse(status=404)

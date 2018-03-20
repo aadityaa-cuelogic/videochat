@@ -34,7 +34,7 @@ $(document).ready(function() {
             if(_this.find('#create-bt').data('user_listing_privilege') == 'True'){
                 // check if user_add_remove_privilege
                 $('.conference-table-data .participant-details').each(function(k,v){
-                    var tmpSelector = _this;
+                    var tmpSelector = $(this);
                     if(tmpSelector.find('.selected-participant').is(':checked')){
                         var tempData = {
                             'id' : tmpSelector.find('.selected-participant').attr('name'),
